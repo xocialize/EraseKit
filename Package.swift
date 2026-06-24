@@ -12,8 +12,15 @@ let package = Package(
     products: [
         .library(name: "EraseKit", targets: ["EraseKit"]),
     ],
+    dependencies: [
+        // media-bridge's MediaMeasure owns the net-clean video frame map + the FlowWarp/DenseFlow substrate
+        // reused for video erase (flow-propagate the painted mask so it tracks a moving subject). Net-clean.
+        .package(path: "../media-bridge"),
+    ],
     targets: [
-        .target(name: "EraseKit"),
-        .testTarget(name: "EraseKitTests", dependencies: ["EraseKit"]),
+        .target(name: "EraseKit",
+                dependencies: [.product(name: "MediaMeasure", package: "media-bridge")]),
+        .testTarget(name: "EraseKitTests",
+                    dependencies: ["EraseKit", .product(name: "MediaMeasure", package: "media-bridge")]),
     ]
 )

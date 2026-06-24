@@ -54,6 +54,27 @@ final class EraseKitTests: XCTestCase {
         for i in 0..<a.count { XCTAssertEqual(a[i], b[i], accuracy: 0.004) }
     }
 
+    private func grayByte(_ cg: CGImage, _ x: Int, _ y: Int) -> UInt8 {
+        let w = cg.width, h = cg.height
+        var b = [UInt8](repeating: 0, count: w * h)
+        CGContext(data: &b, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w,
+                  space: CGColorSpaceCreateDeviceGray(), bitmapInfo: CGImageAlphaInfo.none.rawValue)!
+            .draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+        return b[y * w + x]
+    }
+
+    /// Dilation grows the white (remove) region so the fill covers the subject + a margin.
+    func testDilateGrowsMask() {
+        let w = 24, h = 24
+        let mask = maskRect(10, 10, 4, 4, w, h)               // 4×4 white square at (10,10)
+        XCTAssertLessThan(grayByte(mask, 7, 12), 40, "before: 3px left of the square is black")
+        let grown = MaskOps.dilate(mask, radius: 3)
+        XCTAssertGreaterThan(grayByte(grown, 7, 12), 200, "after dilate(3): that pixel is now white")
+        XCTAssertLessThan(grayByte(grown, 0, 0), 40, "a far corner stays black")
+        // radius 0 = identity
+        XCTAssertEqual(grayByte(MaskOps.dilate(mask, radius: 0), 12, 12), grayByte(mask, 12, 12))
+    }
+
     /// Eraser routes through an injected provider when present...
     func testEraserUsesProvider() async throws {
         let w = 8, h = 8

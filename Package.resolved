@@ -1,0 +1,15 @@
+{
+  "originHash" : "21da5b56ed0ae61fb14e1fb331ff344c89246520d171ff8abe6dc37e1adf5bb0",
+  "pins" : [
+    {
+      "identity" : "matroska-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/xocialize/matroska-swift.git",
+      "state" : {
+        "revision" : "c876a9810d4029b14d3cb44996da101f93d16b1b",
+        "version" : "0.1.0"
+      }
+    }
+  ],
+  "version" : 3
+}
