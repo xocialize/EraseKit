@@ -15,7 +15,7 @@ let package = Package(
     dependencies: [
         // media-bridge's MediaMeasure owns the net-clean video frame map + the FlowWarp/DenseFlow substrate
         // reused for video erase (flow-propagate the painted mask so it tracks a moving subject). Net-clean.
-        .package(path: "../media-bridge"),
+        .package(url: "https://github.com/xocialize/media-bridge.git", from: "0.2.0"),
     ],
     targets: [
         .target(name: "EraseKit",
