@@ -34,10 +34,30 @@ The one Forge seam taking two inputs — inpainting needs the hole alongside the
 EraseKit stays **net-clean**: no MLX, no weights, macOS 14 floor. MLX implementations (LaMa for structured
 backgrounds, MI-GAN for speed) live in [`ForgeCore`](https://github.com/xocialize/ForgeCore).
 
+## EraseFill: the generative fill route (0.3.0)
+
+`import EraseFill` gets `FillRoute`: the pixel steps of generative fill and extend, around an edit model that the
+caller runs. The steps are:
+- the magenta marker and its instruction text;
+- the paint guard, which catches a kept marker or a dark extend;
+- the seam harmonize;
+- the composite through the mask, which leaves every unmasked pixel exact;
+- the padded extend canvas and its per-side masks;
+- the seam band.
+
+These are the steps the Generative Fill bake-off measured (AB-R-0534), and this is the **one implementation**. Both
+ForgeCore's `GenerativeFillRoute`, which ForgeCore re-exports, and pixel-agency-normalizer, which Gaea and Pixel Agency
+Desktop use, call it (AB-A-0180). Any change here changes what was measured, so run ForgeCore's
+`GenerativeFillLiveTests/bakeOffReproduces` after one.
+
+It's a separate product with no dependencies, CoreGraphics only, so linking it doesn't pull media-bridge in.
+
 ## Install
 
 ```swift
-.package(url: "https://github.com/xocialize/EraseKit.git", from: "0.1.0")
+.package(url: "https://github.com/xocialize/EraseKit.git", from: "0.3.0")
+// .product(name: "EraseKit", package: "EraseKit")   — erase + the inpaint seam
+// .product(name: "EraseFill", package: "EraseKit")  — the generative fill route only
 ```
 
-Depends on [`media-bridge`](https://github.com/xocialize/media-bridge) only. MIT.
+EraseKit depends on [`media-bridge`](https://github.com/xocialize/media-bridge) only; EraseFill on nothing. MIT.
